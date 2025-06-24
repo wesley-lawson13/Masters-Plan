@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -33,6 +32,7 @@ model School {
   majors           Major[]
   minors           Minor[]
   coreRequirements Requirement[]
+  userPlans        UserPlan[]
 }
 
 model Major {
@@ -60,14 +60,28 @@ model Minor {
 }
 
 model Course {
-  id             String          @id @default(uuid())
-  title          String
-  code           String          @unique
-  credits        Int
-  requiredBy     Requirement[]
-  prerequisites  Course[]        @relation("CourseToPrerequisites") // Prerequisites for this course
-  requiredFor    Course[]        @relation("CourseToPrerequisites") // Courses that require this course as a prerequisite
-  plannedCourses PlannedCourse[]
+  id                  String              @id @default(uuid())
+  title               String
+  code                String              @unique
+  credits             Int?
+  requiredBy          Requirement[]
+  plannedCourses      PlannedCourse[]
+  preRequisiteGroups  PrerequisiteGroup[] @relation("CourseToGroup")
+  requiredByGroups    PrerequisiteGroup[] @relation("GroupToCourse")
+  prerequisiteGroupId String?
+}
+
+model PrerequisiteGroup {
+  id            String    @id @default(uuid())
+  requiredFor   Course    @relation("GroupToCourse", fields: [requiredForId], references: [id])
+  requiredForId String
+  type          LogicType
+  prerequisites Course[]  @relation("CourseToGroup")
+}
+
+enum LogicType {
+  AND
+  OR
 }
 
 model Requirement {
@@ -90,15 +104,18 @@ enum RequirementType {
 }
 
 model UserPlan {
-  id        String         @id @default(uuid())
-  title     String
-  user      User           @relation(fields: [userId], references: [id])
-  userId    String
-  semesters SemesterPlan[]
-  majors    Major[]        @relation("UserPlanMajors")
-  minors    Minor[]        @relation("UserPlanMinors")
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id                 String         @id @default(uuid())
+  title              String
+  user               User           @relation(fields: [userId], references: [id])
+  userId             String
+  expectedGraduation Int
+  school             School         @relation(fields: [schoolId], references: [id])
+  schoolId           String
+  semesters          SemesterPlan[]
+  majors             Major[]        @relation("UserPlanMajors")
+  minors             Minor[]        @relation("UserPlanMinors")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 }
 
 model SemesterPlan {
