@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// ! to run migration: prisma migrate dev --name <MIGRATION_NAME>
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -61,8 +63,8 @@ model Minor {
 
 model Course {
   id                  String              @id @default(uuid())
-  title               String
-  code                String              @unique
+  title               String              @unique
+  code                String?             @unique
   credits             Int?
   requiredBy          Requirement[]
   plannedCourses      PlannedCourse[]
