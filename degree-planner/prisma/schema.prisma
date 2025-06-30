@@ -106,18 +106,17 @@ enum RequirementType {
 }
 
 model UserPlan {
-  id                 String         @id @default(uuid())
-  title              String
-  user               User           @relation(fields: [userId], references: [id])
-  userId             String
-  expectedGraduation Int
-  school             School         @relation(fields: [schoolId], references: [id])
-  schoolId           String
-  semesters          SemesterPlan[]
-  majors             Major[]        @relation("UserPlanMajors")
-  minors             Minor[]        @relation("UserPlanMinors")
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  id        String         @id @default(uuid())
+  title     String
+  user      User           @relation(fields: [userId], references: [id])
+  userId    String
+  school    School         @relation(fields: [schoolId], references: [id])
+  schoolId  String
+  semesters SemesterPlan[]
+  majors    Major[]        @relation("UserPlanMajors")
+  minors    Minor[]        @relation("UserPlanMinors")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 }
 
 model SemesterPlan {
